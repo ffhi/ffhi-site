@@ -23,7 +23,7 @@ msgstr ""
 "kann sich dein Knoten mit dem Freifunk Netzwerk verbinden. Bitte"
 "schicke dazu diesen Schlüssel und den Namen deines Knotens"
 "(<em><%=hostname%> (<%=sysconfig.primary_mac%>)</em>) an"
-"<a href="mailto:keys@freifunk-hi.de?subject=Public%20Key%20<%=hostname%>&body=<%=sysconfig.primary_mac%> <%=pubkey%>">keys@freifunk-hi.de</a>."
+"<a href=\"mailto:keys@freifunk-hi.de?subject=Public%20Key%20<%=hostname%>&body=<%=sysconfig.primary_mac%>%20<%=pubkey%>\">keys@freifunk-hi.de</a>."
 
 msgid "gluon-config-mode:reboot"
 msgstr ""

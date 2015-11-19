@@ -25,6 +25,11 @@ msgstr ""
 "Hildesheim servers. "
 "To register the key send it together with your node's name (<em><%=hostname%> (<%=sysconfig.primary_mac%>)</em>) to "
 "<a href=\"mailto:keys@freifunk-hi.de?subject=Public%20Key%20<%=hostname%>&body=<%=sysconfig.primary_mac%>%20<%=pubkey%>\">keys@freifunk-hi.de</a>."
+"<div class=\"the-key\">"
+" # <%= hostname %> <%=sysconfig.primary_mac%>"
+" <br/>"
+"<%= pubkey %>"
+"</div>"
 
 
 msgid "gluon-config-mode:reboot"

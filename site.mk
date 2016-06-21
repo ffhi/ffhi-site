@@ -39,7 +39,7 @@ GLUON_LANGS ?= de en
 #			opkg compare-versions "$1" '>>' "$2"
 #		to decide if a version is newer or not.
 
-DEFAULT_GLUON_RELEASE := 0.8.1
+DEFAULT_GLUON_RELEASE := 0.8.2
 
 
 ##	GLUON_RELEASE

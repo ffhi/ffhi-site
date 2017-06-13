@@ -17,12 +17,12 @@ GLUON_SITE_PACKAGES := \
 	gluon-config-mode-mesh-vpn \
 	gluon-ebtables-filter-multicast \
 	gluon-ebtables-filter-ra-dhcp \
-	gluon-luci-admin \
-	gluon-luci-autoupdater \
-	gluon-luci-wifi-config \
-	gluon-luci-portconfig \
-	gluon-luci-private-wifi \
-	gluon-next-node \
+	gluon-ebtables-source-filter \
+	gluon-web-admin \
+	gluon-web-autoupdater \
+	gluon-web-wifi-config \
+	gluon-web-network \
+	gluon-web-private-wifi \
 	gluon-mesh-vpn-fastd \
 	gluon-radvd \
 	gluon-setup-mode \
@@ -30,6 +30,24 @@ GLUON_SITE_PACKAGES := \
 	iwinfo \
 	iptables \
 	haveged
+
+#       Removed packages
+#	gluon-next-node \
+
+
+# x86-generic
+ifeq ($(GLUON_TARGET),x86-generic)
+# support acpi shutdown for openwrt as VM
+GLUON_SITE_PACKAGES += \
+        kmod-button-hotplug
+endif
+
+# x86-64
+ifeq ($(GLUON_TARGET),x86-64)
+# support acpi shutdown for openwrt as VM
+GLUON_SITE_PACKAGES += \
+        kmod-button-hotplug
+endif
 
 GLUON_LANGS ?= de en
 

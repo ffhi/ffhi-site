@@ -4,29 +4,22 @@
 #		specify gluon/openwrt packages to include here
 #		The gluon-mesh-batman-adv-* package must come first because of the dependency resolution
 
+GLUON_FEATURES := \
+	autoupdater \
+	ebtables-filter-multicast \
+	ebtables-filter-ra-dhcp \
+	ebtables-limit-arp \
+	mesh-batman-adv-15 \
+	mesh-vpn-fastd \
+	radvd \
+	alfred \
+	respondd \
+	status-page \
+	web-advanced \
+	web-wizard \
+	web-private-wifi
+
 GLUON_SITE_PACKAGES := \
-	gluon-mesh-batman-adv-15 \
-	gluon-alfred \
-	gluon-respondd \
-	gluon-autoupdater \
-	gluon-config-mode-autoupdater \
-	gluon-config-mode-contact-info \
-	gluon-config-mode-core \
-	gluon-config-mode-geo-location \
-	gluon-config-mode-hostname \
-	gluon-config-mode-mesh-vpn \
-	gluon-ebtables-filter-multicast \
-	gluon-ebtables-filter-ra-dhcp \
-	gluon-ebtables-source-filter \
-	gluon-web-admin \
-	gluon-web-autoupdater \
-	gluon-web-wifi-config \
-	gluon-web-network \
-	gluon-web-private-wifi \
-	gluon-mesh-vpn-fastd \
-	gluon-radvd \
-	gluon-setup-mode \
-	gluon-status-page \
 	iwinfo \
 	iptables \
 	haveged
@@ -57,7 +50,7 @@ GLUON_LANGS ?= de en
 #			opkg compare-versions "$1" '>>' "$2"
 #		to decide if a version is newer or not.
 
-DEFAULT_GLUON_RELEASE := 0.8.3
+DEFAULT_GLUON_RELEASE := 0.9.0
 
 
 ##	GLUON_RELEASE
@@ -71,4 +64,4 @@ DEFAULT_GLUON_RELEASE := 0.8.3
 GLUON_RELEASE ?= $(DEFAULT_GLUON_RELEASE)
 
 # Default priority for updates.
-GLUON_PRIORITY ?= 14
+GLUON_PRIORITY ?= 30

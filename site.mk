@@ -16,6 +16,7 @@ DEFAULT_GLUON_RELEASE := 0.6+exp$(shell date '+%Y%m%d')
 #			$ make images GLUON_RELEASE=23.42+5
 #		would generate images named like this:
 #			gluon-ff%site_code%-23.42+5-%router_model%.bin
+GLUON_DEPRECATED ?= 0
 
 GLUON_RELEASE ?= $(DEFAULT_GLUON_RELEASE)
 

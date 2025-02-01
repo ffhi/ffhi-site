@@ -23,3 +23,7 @@ jobs:
         run: make update
       - name: Make Firmware
         run: make GLUON_TARGET=ath79-generic
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: './output/images/*'

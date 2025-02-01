@@ -10,13 +10,13 @@ jobs:
       - name: Checkout Gluon Release
         uses: actions/checkout@v4
         with:
-          name: freifunk-gluon/gluon
-          repository: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
+          repository: freifunk-gluon/gluon
+          ref: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
           path: './'
       - name: Checkout FFHI site config
         uses: actions/checkout@v4
         with:
-          name: ffhi/ffhi-site
+          repository: ffhi/ffhi-site
           path: './gluon/site'
       - name: Make Update
         working-directory: './gluon'

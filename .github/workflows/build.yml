@@ -20,7 +20,7 @@ jobs:
           repository: ffhi/ffhi-site
           path: './gluon/site'
       - name: Make Update
-        run: cd gluon cat Makefile
+        run: cd gluon && cat Makefile
       - name: Make Firmware
         working-directory: './gluon'
         run: make GLUON_TARGET=ath79-generic

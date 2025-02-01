@@ -1,7 +1,8 @@
 name: FFHI Gluon Build
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+  push:
 
 jobs:
   build:
@@ -19,7 +20,7 @@ jobs:
           repository: ffhi/ffhi-site
           path: './gluon/site'
       - name: Make Update
-        run: cd gluon && make update
+        run: cd gluon cat Makefile
       - name: Make Firmware
         working-directory: './gluon'
         run: make GLUON_TARGET=ath79-generic

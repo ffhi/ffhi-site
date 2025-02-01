@@ -1,0 +1,26 @@
+name: FFHI Gluon Build
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Gluon Release
+        uses: actions/checkout@v4
+        with:
+          name: freifunk-gluon/gluon
+          repository: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
+          path: './'
+      - name: Checkout FFHI site config
+        uses: actions/checkout@v4
+        with:
+          name: ffhi/ffhi-site
+          path: './gluon/site'
+      - name: Make Update
+        working-directory: './gluon'
+        run: make update
+      - name: Make Firmware
+        working-directory: './gluon'
+        run: make GLUON_TARGET=ath79-generic

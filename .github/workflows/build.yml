@@ -14,15 +14,12 @@ jobs:
           repository: freifunk-gluon/gluon
           ref: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
           path: './'
-      - name: ls
-        run: ls
       - name: Checkout FFHI site config
         uses: actions/checkout@v4
         with:
           repository: ffhi/ffhi-site
-          path: './gluon/site'
+          path: './site'
       - name: Make Update
-        run: cd gluon && cat Makefile
+        run: make update
       - name: Make Firmware
-        working-directory: './gluon'
         run: make GLUON_TARGET=ath79-generic

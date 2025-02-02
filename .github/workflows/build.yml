@@ -22,7 +22,7 @@ jobs:
           mkdir site
           touch site/site.mk
           TARGETS=$( make list-targets | tr "\n" " " | sed 's/ /\", \"/g' )
-          echo "targets=[\"${TARGETS%???}\"]" >> "$GITHUB_OUTPUT"
+          echo "targets=[\"${TARGETS%???}]" >> "$GITHUB_OUTPUT"
 
   build:
     needs: define-matrix

@@ -5,32 +5,30 @@ on:
   push:
 
 jobs:
-   
+  define-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      colors: ${{ steps.colors.outputs.colors }}
+    steps:
+      - name: Define Colors
+        id: colors
+        run: |
+          echo 'colors=["red", "green", "blue"]' >> "$GITHUB_OUTPUT"
 
   build:
+    needs: define-matrix
+      strategy:
+        matrix:
+          color: ${{ fromJSON(needs.define-matrix.outputs.colors) }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
     steps:
       - name: Print Version
-        run: echo ${{ matrix.version }}
+        run: |
+          echo ${{ matrix.color }}
       - name: Checkout Gluon Release
         uses: actions/checkout@v4
         with:
           repository: freifunk-gluon/gluon
           ref: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
           path: './'
-      - name: Checkout FFHI site config
-        uses: actions/checkout@v4
-        with:
-          repository: ffhi/ffhi-site
-          path: './site'
-      - name: Make Update
-        run: make update
-      - name: Make Firmware
-        run: make GLUON_TARGET=ath79-generic
-      - name: Publish Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          path: './output/images/*'
+

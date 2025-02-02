@@ -8,7 +8,7 @@ env:
   GLUON_REF: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
 
 jobs:
-  define-matrix:
+  define_matrix:
     runs-on: ubuntu-latest
     outputs:
       versions: ${{ steps.versions.outputs.targets }}
@@ -28,7 +28,7 @@ jobs:
           echo "targets=[\"${TARGETS%???}]" >> "$GITHUB_OUTPUT"
 
   build:
-    needs: define-matrix
+    needs: define_matrix
     strategy:
       matrix:
         version: ${{ fromJSON(needs.define-matrix.outputs.versions) }}

@@ -8,7 +8,7 @@ jobs:
   define-matrix:
     runs-on: ubuntu-latest
     outputs:
-      colors: ${{ steps.versions.outputs.targets }}
+      targets: ${{ steps.versions.outputs.targets }}
     steps:
       - name: Checkout Gluon Release
         uses: actions/checkout@v4

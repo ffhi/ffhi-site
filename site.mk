@@ -6,6 +6,8 @@
 #			opkg compare-versions "$1" '>>' "$2"
 #		to decide if a version is newer or not.
 
+GLUON_MULTIDOMAIN=1
+
 DEFAULT_GLUON_RELEASE := 0.6+exp$(shell date '+%Y%m%d')
 
 # Variables set with ?= can be overwritten from the command line
@@ -16,7 +18,6 @@ DEFAULT_GLUON_RELEASE := 0.6+exp$(shell date '+%Y%m%d')
 #			$ make images GLUON_RELEASE=23.42+5
 #		would generate images named like this:
 #			gluon-ff%site_code%-23.42+5-%router_model%.bin
-GLUON_DEPRECATED ?= 0
 
 GLUON_RELEASE ?= $(DEFAULT_GLUON_RELEASE)
 

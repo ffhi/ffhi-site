@@ -28,7 +28,7 @@ jobs:
     needs: define-matrix
     strategy:
       matrix:
-        version: ${{ fromJSON(needs.define-matrix.outputs.versions) }}
+        version: ${{ fromJSON(needs.define-matrix.outputs.targets) }}
     runs-on: ubuntu-latest
     steps:
       - name: Print Version

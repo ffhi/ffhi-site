@@ -5,9 +5,16 @@ on:
   push:
 
 jobs:
+   
+
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
+      - name: Print Version
+        run: echo ${{ matrix.version }}
       - name: Checkout Gluon Release
         uses: actions/checkout@v4
         with:

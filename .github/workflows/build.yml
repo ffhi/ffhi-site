@@ -28,11 +28,9 @@ jobs:
     needs: define-matrix
     strategy:
       matrix:
-        version: ${{ fromJSON(needs.define-matrix.outputs.colors) }}
+        color: ${{ fromJSON(needs.define-matrix.outputs.colors) }}
     runs-on: ubuntu-latest
     steps:
       - name: Print Version
         run: |
-          echo ${{ matrix.version }}
-
-
+          echo ${{ matrix.color }}

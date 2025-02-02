@@ -8,12 +8,25 @@ jobs:
   define-matrix:
     runs-on: ubuntu-latest
     outputs:
-      colors: ${{ steps.colors.outputs.colors }}
+      colors: ${{ steps.versions.outputs.targets }}
     steps:
       - name: Define Colors
         id: colors
         run: |
-          echo 'colors=["red", "green", "blue"]' >> "$GITHUB_OUTPUT"
+          echo 'colors=["red", "green", "blue"]' 
+      - name: Checkout Gluon Release
+        uses: actions/checkout@v4
+        with:
+          repository: freifunk-gluon/gluon
+          ref: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
+          path: './'
+      - name: Fill Target Matrix
+        id: versions
+        run: |
+          mkdir site
+          touch site/site.mk
+          TARGETS=$( make list-targets | tr "\n" " " | sed 's/ /\", \"/g' )
+          echo "targets=[\"$TARGETS\"]" >> "$GITHUB_OUTPUT"
 
   build:
     needs: define-matrix
@@ -25,10 +38,5 @@ jobs:
       - name: Print Version
         run: |
           echo ${{ matrix.color }}
-      - name: Checkout Gluon Release
-        uses: actions/checkout@v4
-        with:
-          repository: freifunk-gluon/gluon
-          ref: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
-          path: './'
+
 

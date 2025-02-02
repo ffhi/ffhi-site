@@ -53,3 +53,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: './output/images/*'
+          name: ${{ matrix.version }}_output

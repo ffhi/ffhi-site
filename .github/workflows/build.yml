@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: freifunk-gluon/gluon
-          ref: $GLUON_REF
+          ref: ${{ env.GLUON_REF }}
           path: './'
       - name: Fill Target Matrix
         id: versions
@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: freifunk-gluon/gluon
-          ref: $GLUON_REF
+          ref: ${{ env.GLUON_REF }}
           path: './'
       - name: Checkout FFHI site config
         uses: actions/checkout@v4

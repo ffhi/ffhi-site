@@ -3,6 +3,7 @@ packages {'iwinfo'}
 features {
 	'autoupdater',
 	'ebtables-filter-multicast',
+	'config-mode-domain-select',
 	'ebtables-filter-ra-dhcp',
 	'ebtables-limit-arp',
 	'mesh-batman-adv-15',

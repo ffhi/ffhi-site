@@ -31,7 +31,7 @@ jobs:
     needs: define_matrix
     strategy:
       matrix:
-        version: ${{ fromJSON(needs.define-matrix.outputs.versions) }}
+        version: ${{ fromJSON(needs.define_matrix.outputs.versions) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Gluon Release

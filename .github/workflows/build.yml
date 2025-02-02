@@ -10,10 +10,6 @@ jobs:
     outputs:
       colors: ${{ steps.versions.outputs.targets }}
     steps:
-      - name: Define Colors
-        id: colors
-        run: |
-          echo 'colors=["red", "green", "blue"]' 
       - name: Checkout Gluon Release
         uses: actions/checkout@v4
         with:
@@ -26,17 +22,17 @@ jobs:
           mkdir site
           touch site/site.mk
           TARGETS=$( make list-targets | tr "\n" " " | sed 's/ /\", \"/g' )
-          echo "targets=[\"$TARGETS\"]" >> "$GITHUB_OUTPUT"
+          echo "targets=[\"${TARGETS%???}\"]" >> "$GITHUB_OUTPUT"
 
   build:
     needs: define-matrix
     strategy:
       matrix:
-        color: ${{ fromJSON(needs.define-matrix.outputs.colors) }}
+        version: ${{ fromJSON(needs.define-matrix.outputs.versions) }}
     runs-on: ubuntu-latest
     steps:
       - name: Print Version
         run: |
-          echo ${{ matrix.color }}
+          echo ${{ matrix.version }}
 
 

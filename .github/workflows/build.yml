@@ -17,9 +17,9 @@ jobs:
 
   build:
     needs: define-matrix
-      strategy:
-        matrix:
-          color: ${{ fromJSON(needs.define-matrix.outputs.colors) }}
+    strategy:
+      matrix:
+        color: ${{ fromJSON(needs.define-matrix.outputs.colors) }}
     runs-on: ubuntu-latest
     steps:
       - name: Print Version

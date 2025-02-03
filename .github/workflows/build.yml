@@ -48,7 +48,9 @@ jobs:
       - name: Make Update
         run: make update
       - name: Make Firmware
-        run: make GLUON_TARGET=${{ matrix.version }}
+        run: |
+          BUILD_THREADS="$(($(nproc) + 1))"
+          make -j$BUILD_THREADS V=s GLUON_TARGET=${{ matrix.version }}
       - name: Publish Artifacts
         uses: actions/upload-artifact@v4
         with:

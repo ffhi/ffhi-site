@@ -11,7 +11,9 @@ features {
 	'respondd',
 	'status-page',
 	'web-advanced',
-	'web-wizard'
+	'web-wizard',
+	'config-mode-geo-location-osm'
+
 }
 
 if not device_class('tiny') then

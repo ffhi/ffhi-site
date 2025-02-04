@@ -47,6 +47,8 @@ jobs:
           path: './site'
       - name: Make Update
         run: make update
+      - name: Install qemu-img
+        run: sudo apt install qemu-utils
       - name: Make Firmware
         run: |
           BUILD_THREADS="$(($(nproc) + 1))"

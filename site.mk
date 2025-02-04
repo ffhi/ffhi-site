@@ -8,8 +8,8 @@
 
 GLUON_MULTIDOMAIN=1
 
-DEFAULT_GLUON_RELEASE := 0.6+exp$(shell date '+%Y%m%d')
-
+#DEFAULT_GLUON_RELEASE := 0.6+exp$(shell date '+%Y%m%d')
+DEFAULT_GLUON_RELEASE := 0.1Alpha
 # Variables set with ?= can be overwritten from the command line
 
 ##	GLUON_RELEASE

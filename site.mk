@@ -7,7 +7,7 @@
 #		to decide if a version is newer or not.
 
 GLUON_MULTIDOMAIN=1
-
+GLUON_DEPRECATED=full
 #DEFAULT_GLUON_RELEASE := 0.6+exp$(shell date '+%Y%m%d')
 DEFAULT_GLUON_RELEASE := 0.2Alpha
 # Variables set with ?= can be overwritten from the command line
@@ -28,4 +28,4 @@ GLUON_PRIORITY ?= 0
 GLUON_REGION ?= eu
 
 # Languages to include
-GLUON_LANGS ?= en de
+GLUON_LANGS ?= de en

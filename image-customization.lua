@@ -4,6 +4,7 @@ features {
 	'autoupdater',
 	'ebtables-filter-multicast',
 	'config-mode-domain-select',
+	'config-mode-geo-location-osm',
 	'ebtables-filter-ra-dhcp',
 	'ebtables-limit-arp',
 	'mesh-batman-adv-15',
@@ -12,7 +13,6 @@ features {
 	'status-page',
 	'web-advanced',
 	'web-wizard',
-	'config-mode-geo-location-osm'
 
 }
 

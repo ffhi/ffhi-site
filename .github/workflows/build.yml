@@ -9,7 +9,7 @@ env:
 
 jobs:
   define_matrix:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       versions: ${{ steps.versions.outputs.targets }}
     steps:
@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         version: ${{ fromJSON(needs.define_matrix.outputs.versions) }}
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Gluon Release
         uses: actions/checkout@v4

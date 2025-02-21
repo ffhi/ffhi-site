@@ -22,7 +22,7 @@ jobs:
           https://api.github.com/repos/ffhi/ffhi-site/actions/artifacts > .github/scripts/artifacts.json
       - name: Download artifacts
         run: |
-          ls
+          ls .github/scripts/
           python3 .github/scripts/download_artifacts.py ${{secrets.GITHUB_TOKEN}}
       - name: ls
         run: ls

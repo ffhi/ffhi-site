@@ -9,8 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Save SSH key to file 
-        run: |
-          'echo "$SSH_KEY" > keyfile'
+        run: 'echo "$SSH_KEY" > keyfile'
         shell: bash
         env:
           SSH_KEY: ${{secrets.NETCUP_SSH_PRIVATE_KEY}}

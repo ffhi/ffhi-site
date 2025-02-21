@@ -10,11 +10,14 @@ jobs:
     steps:
       - name: Save SSH key to file 
         run: 'echo "$SSH_KEY" > keyfile'
-        shell: bash
         env:
           SSH_KEY: ${{secrets.NETCUP_SSH_PRIVATE_KEY}}
-      - name: Test SSH connection
+      - name: Prepare SSH connection
         run: |
           cat keyfile
           chmod 400 keyfile
-          ssh -i keyfile root@152.53.133.243 ls
+          mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
+          ssh-keyscan firmware.freifunk-hildesheim.de >> ~/.ssh/known_hosts
+      - name: Test SSH connection
+        run: |
+          ssh -i keyfile root@firmware.freifunk-hildesheim.de ls

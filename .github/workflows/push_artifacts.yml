@@ -22,7 +22,7 @@ jobs:
           path: './'
       - name: Download artifacts
         run: |
-          python3 ffhi-site/.github/scripts/download_artifacts.py ${{secrets.GITHUB_TOKEN}}
+          python3 .github/scripts/download_artifacts.py ${{secrets.GITHUB_TOKEN}}
       - name: ls
         run: ls
       - name: Save SSH key to file 

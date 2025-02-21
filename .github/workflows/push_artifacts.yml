@@ -1,0 +1,21 @@
+name: Push artifacts to autoupdate server
+
+on:
+  workflow_dispatch:
+  push:
+
+env:
+  GLUON_REF: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
+
+jobs:
+  push-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Save SSH key to file 
+        run: 'echo "$SSH_KEY" > keyfile'
+        shell: bash
+        env:
+          SSH_KEY: ${{secrets.NETCUP_SSH_PRIVATE_KEY}}
+      - name: Test SSH connection
+        run: |
+          ssh -i keyfile root@firmware.freifunk-hildesheim.de ls

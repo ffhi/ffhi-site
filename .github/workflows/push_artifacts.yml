@@ -17,4 +17,4 @@ jobs:
         run: |
           cat keyfile
           chmod 400 keyfile
-          ssh -i keyfile root@firmware.freifunk-hildesheim.de ls
+          ssh -i keyfile root@152.53.133.243 ls

@@ -22,6 +22,7 @@ jobs:
           path: './'
       - name: Download artifacts
         run: |
+          mv artifacts.json .github/scripts/artifacts.json
           python3 .github/scripts/download_artifacts.py ${{secrets.GITHUB_TOKEN}}
       - name: ls
         run: ls

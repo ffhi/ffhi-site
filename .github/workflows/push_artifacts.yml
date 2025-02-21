@@ -36,6 +36,9 @@ jobs:
           chmod 400 keyfile
           mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
           ssh-keyscan firmware.freifunk-hildesheim.de >> ~/.ssh/known_hosts
-      - name: Test SSH connection
+      - name: Push files to firmware server
         run: |
+          ssh root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/ && rm -rf testing && mkdir testing'
           scp -i keyfile *.zip root@firmware.freifunk-hildesheim.de:/opt/docker/caddy/data/www-data/firmware/testing
+          ssh root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/testing && unzip "*.zip"'
+          ssh root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/testing && rm *.zip'

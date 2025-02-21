@@ -20,7 +20,7 @@ jobs:
         run: |
           while read p; do \
             echo "$p" \
-          done
+          done < artifacts.txt
       - name: Download artifacts
         run: |
           curl -s -L \

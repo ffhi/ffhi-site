@@ -38,4 +38,4 @@ jobs:
           ssh-keyscan firmware.freifunk-hildesheim.de >> ~/.ssh/known_hosts
       - name: Test SSH connection
         run: |
-          ssh -i keyfile root@firmware.freifunk-hildesheim.de ls
+          scp -i keyfile *.zip root@firmware.freifunk-hildesheim.de:/opt/docker/caddy/data/www-data/firmware/testing

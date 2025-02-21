@@ -18,9 +18,9 @@ jobs:
           https://api.github.com/repos/ffhi/ffhi-site/actions/artifacts | jq '.artifacts[].archive_download_url' > artifacts.txt
       - name: Read artifacts
         run: |
-          while read p; do \
+          cat artifacts.txt | while read p; do \
             echo "$p" \
-          done < artifacts.txt
+          done 
       - name: Download artifacts
         run: |
           curl -s -L \

@@ -38,7 +38,7 @@ jobs:
           ssh-keyscan firmware.freifunk-hildesheim.de >> ~/.ssh/known_hosts
       - name: Push files to firmware server
         run: |
-          ssh root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/ && rm -rf testing && mkdir testing'
+          ssh -i keyfile root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/ && rm -rf testing && mkdir testing'
           scp -i keyfile *.zip root@firmware.freifunk-hildesheim.de:/opt/docker/caddy/data/www-data/firmware/testing
-          ssh root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/testing && unzip "*.zip"'
-          ssh root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/testing && rm *.zip'
+          ssh -i keyfile root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/testing && unzip "*.zip"'
+          ssh -i keyfile root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/testing && rm *.zip'

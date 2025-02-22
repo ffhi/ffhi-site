@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   push:
 
+env:
+  URL_FIRMWARE: firmware.freifunk-hildesheim.de
+  CADDY_FOLDER: /opt/docker/caddy/data/www-data/firmware/testing
+
 jobs:
   push-artifacts:
     runs-on: ubuntu-latest
@@ -35,10 +39,10 @@ jobs:
           cat keyfile
           chmod 400 keyfile
           mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
-          ssh-keyscan firmware.freifunk-hildesheim.de >> ~/.ssh/known_hosts
+          ssh-keyscan ${{env.URL_FIRMWARE}} >> ~/.ssh/known_hosts
       - name: Push files to firmware server
         run: |
-          ssh -i keyfile root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/ && rm -rf testing && mkdir testing'
-          scp -i keyfile *.zip root@firmware.freifunk-hildesheim.de:/opt/docker/caddy/data/www-data/firmware/testing
-          ssh -i keyfile root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/testing && unzip "*.zip"'
-          ssh -i keyfile root@firmware.freifunk-hildesheim.de 'cd /opt/docker/caddy/data/www-data/firmware/testing && rm *.zip'
+          ssh -i keyfile root@${{env.URL_FIRMWARE}} 'cd ${{env.CADDY_FOLDER}} && rm -rf testing && mkdir testing'
+          scp -i keyfile *.zip root@${{env.URL_FIRMWARE}}:/opt/docker/caddy/data/www-data/firmware/testing
+          ssh -i keyfile root@${{env.URL_FIRMWARE}} 'cd ${{env.CADDY_FOLDER}}/testing && unzip "*.zip"'
+          ssh -i keyfile root@${{env.URL_FIRMWARE}} 'rm ${{env.CADDY_FOLDER}}/*.zip'

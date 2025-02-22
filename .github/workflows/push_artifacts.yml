@@ -28,15 +28,12 @@ jobs:
         run: |
           mv .github/scripts/download_artifacts.py ./
           python3 download_artifacts.py ${{secrets.GITHUB_TOKEN}}
-      - name: ls
-        run: ls
       - name: Save SSH key to file 
         run: 'echo "$SSH_KEY" > keyfile'
         env:
           SSH_KEY: ${{secrets.NETCUP_SSH_PRIVATE_KEY}}
       - name: Prepare SSH connection
         run: |
-          cat keyfile
           chmod 400 keyfile
           mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
           ssh-keyscan ${{env.URL_FIRMWARE}} >> ~/.ssh/known_hosts

@@ -2,7 +2,10 @@ name: Push artifacts to autoupdate server
 
 on:
   workflow_dispatch:
-  push:
+  workflow_run:
+    workflows: [FFHI Gluon Build]
+    types:
+      - completed
 
 env:
   URL_FIRMWARE: firmware.freifunk-hildesheim.de

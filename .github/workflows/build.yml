@@ -60,3 +60,6 @@ jobs:
         with:
           path: './output/images/*'
           name: ${{ matrix.version }}_output
+          
+  push_artifacts_to_server:
+    uses: ./.github/workflows/push_artifacts.yml

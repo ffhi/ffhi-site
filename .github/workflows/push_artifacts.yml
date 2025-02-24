@@ -27,7 +27,7 @@ jobs:
       - name: Download artifacts
         run: |
           mv .github/scripts/download_artifacts.py ./
-          python3 download_artifacts.py ${{secrets.GITHUB_TOKEN}}
+          python3 download_artifacts.py artifacts.json ${{secrets.GITHUB_TOKEN}}
       - name: Save SSH key to file 
         run: 'echo "$SSH_KEY" > keyfile'
         env:

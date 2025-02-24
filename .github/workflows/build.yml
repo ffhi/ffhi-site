@@ -62,4 +62,5 @@ jobs:
           name: ${{ matrix.version }}_output
           
   push_artifacts_to_server:
+    needs: build
     uses: ./.github/workflows/push_artifacts.yml

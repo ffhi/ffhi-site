@@ -3,6 +3,8 @@ name: FFHI Gluon Build
 on:
   workflow_dispatch:
   push:
+    branches:
+      - 'main'
 
 env:
   GLUON_REF: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
@@ -58,3 +60,7 @@ jobs:
         with:
           path: './output/images/*'
           name: ${{ matrix.version }}_output
+          
+  push_artifacts_to_server:
+    needs: build
+    uses: ./.github/workflows/push_artifacts.yml

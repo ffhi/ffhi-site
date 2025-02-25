@@ -16,7 +16,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ffhi/ffhi-site
-          ref: ${{ 'dev/push-artifacts-action' }}
           path: './'
       - name: Query list of artifacts
         run: |

@@ -3,6 +3,9 @@ name: FFHI Gluon Build
 on:
   workflow_dispatch:
   push:
+
+
+env:
   GLUON_REF: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
 
 jobs:

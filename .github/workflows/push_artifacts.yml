@@ -39,7 +39,4 @@ jobs:
           ssh-keyscan ${{env.URL_FIRMWARE}} >> ~/.ssh/known_hosts
       - name: Push files to firmware server
         run: |
-          ssh -i keyfile root@${{env.URL_FIRMWARE}} 'rm -rf ${{env.CADDY_FOLDER}} && mkdir ${{env.CADDY_FOLDER}}'
-          scp -i keyfile *.zip root@${{env.URL_FIRMWARE}}:${{env.CADDY_FOLDER}}
-          ssh -i keyfile root@${{env.URL_FIRMWARE}} 'cd ${{env.CADDY_FOLDER}} && unzip "*.zip"'
-          ssh -i keyfile root@${{env.URL_FIRMWARE}} 'rm ${{env.CADDY_FOLDER}}/*.zip'
+          ssh -i keyfile root@${{env.URL_FIRMWARE}} 'ls ${{env.CADDY_FOLDER}}'

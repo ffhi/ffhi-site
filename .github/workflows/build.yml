@@ -3,8 +3,6 @@ name: FFHI Gluon Build
 on:
   workflow_dispatch:
   push:
-
-env:
   GLUON_REF: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
 
 jobs:
@@ -34,7 +32,8 @@ jobs:
         version: ${{ fromJSON(needs.define_matrix.outputs.versions) }}
     runs-on: ubuntu-latest
     steps:
-      run: echo "build goes here"
+      - name: lorem ipsum
+        run: echo "build goes here"
           
   push_artifacts_to_server:
     needs: build

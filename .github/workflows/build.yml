@@ -3,6 +3,8 @@ name: FFHI Gluon Build
 on:
   workflow_dispatch:
   push:
+    branches:
+      - 'main'
 
 env:
   GLUON_REF: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
@@ -48,7 +50,9 @@ jobs:
       - name: Make Update
         run: make update
       - name: Install qemu-img
-        run: sudo apt install qemu-utils
+        run: |
+          sudo apt update
+          sudo apt install qemu-utils
       - name: Make Firmware
         run: |
           BUILD_THREADS="$(($(nproc) + 1))"
@@ -58,3 +62,8 @@ jobs:
         with:
           path: './output/images/*'
           name: ${{ matrix.version }}_output
+          
+  push_artifacts_to_server:
+    needs: build
+    uses: ./.github/workflows/push_artifacts.yml
+    secrets: inherit

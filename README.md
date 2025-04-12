@@ -8,3 +8,5 @@ Beschreibung der Domains: (https://wiki.freieslabor.org/wiki/Freifunk:Domains)
 
 
 WireGuard Branch
+
+Push Test

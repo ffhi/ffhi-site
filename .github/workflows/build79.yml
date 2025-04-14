@@ -1,0 +1,69 @@
+name: FFHI Gluon Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+
+env:
+  GLUON_REF: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
+
+jobs:
+  define_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.versions.outputs.targets }}
+    steps:
+      - name: Checkout Gluon Release
+        uses: actions/checkout@v4
+        with:
+          repository: freifunk-gluon/gluon
+          ref: ${{ env.GLUON_REF }}
+          path: './'
+      - name: Fill Target Matrix
+        id: versions
+        run: |
+          mkdir site
+          touch site/site.mk
+          TARGETS=$( make list-targets | tr "\n" " " | sed 's/ /\", \"/g' )
+          echo "targets=[\"${TARGETS%???}]" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: define_matrix
+    strategy:
+      matrix:
+        version: ${{ fromJSON(needs.define_matrix.outputs.versions) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Gluon Release
+        uses: actions/checkout@v4
+        with:
+          repository: freifunk-gluon/gluon
+          ref: ${{ env.GLUON_REF }}
+          path: './'
+      - name: Checkout FFHI site config
+        uses: actions/checkout@v4
+        with:
+          repository: ffhi/ffhi-site
+          path: './site'
+      - name: Make Update
+        run: make update
+      - name: Install qemu-img
+        run: |
+          sudo apt update
+          sudo apt install qemu-utils
+      - name: Make Firmware
+        run: |
+          BUILD_THREADS="$(($(nproc) + 1))"
+          make -j$BUILD_THREADS V=s GLUON_TARGET=ath79-generic
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: './output/images/*'
+          name: ${{ matrix.version }}_output
+          
+  push_artifacts_to_server:
+    needs: build
+    uses: ./.github/workflows/push_artifacts.yml
+    secrets: inherit

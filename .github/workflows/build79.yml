@@ -26,8 +26,7 @@ jobs:
         run: |
           mkdir site
           touch site/site.mk
-          TARGETS=$( make list-targets | tr "\n" " " | sed 's/ /\", \"/g' )
-          echo "targets=[\"${TARGETS%???}]" >> "$GITHUB_OUTPUT"
+          echo "targets=ath79-generic" >> "$GITHUB_OUTPUT"
 
   build:
     needs: define_matrix

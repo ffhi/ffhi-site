@@ -1,10 +1,10 @@
-name: FFHI Gluon Build
+name: FFHI Gluon Build79
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - 'main'
+      - 'WireGuard'
 
 env:
   GLUON_REF: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d

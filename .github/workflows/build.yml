@@ -11,7 +11,8 @@ env:
   GLUON_REF: 031a835e4f6658dc6f720ef55635baf4841a7cb6
 jobs:
   define_matrix:
-    runs-on: ubuntu-latest
+    # Fest auf 24.04: neuere Images liefern uutils-coreutils statt GNU 'install', das OpenWrt-Prereq-Check scheitert
+    runs-on: ubuntu-24.04
     outputs:
       versions: ${{ steps.versions.outputs.targets }}
     steps:
@@ -34,7 +35,8 @@ jobs:
     strategy:
       matrix:
         version: ${{ fromJSON(needs.define_matrix.outputs.versions) }}
-    runs-on: ubuntu-latest
+    # Fest auf 24.04: neuere Images liefern uutils-coreutils statt GNU 'install', das OpenWrt-Prereq-Check scheitert
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Gluon Release
         uses: actions/checkout@v4

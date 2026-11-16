@@ -2,6 +2,11 @@ name: FFHI Gluon Build
 
 on:
   workflow_dispatch:
+    inputs:
+      target:
+        description: 'Nur dieses Gluon-Target bauen (z.B. ramips-mt7621); leer = alle'
+        required: false
+        default: ''
   push:
     branches:
       - 'main'
@@ -24,11 +29,19 @@ jobs:
           path: './'
       - name: Fill Target Matrix
         id: versions
+        env:
+          ONLY_TARGET: ${{ github.event.inputs.target }}
         run: |
           mkdir site
           touch site/site.mk
-          TARGETS=$( make list-targets | tr "\n" " " | sed 's/ /\", \"/g' )
-          echo "targets=[\"${TARGETS%???}]" >> "$GITHUB_OUTPUT"
+          if [ -n "$ONLY_TARGET" ]; then
+            # Eingabe gegen die echte Target-Liste prüfen, nie ungeprüft in die Matrix übernehmen
+            make list-targets | grep -qxF -- "$ONLY_TARGET" || { echo "Unbekanntes Target: $ONLY_TARGET" >&2; exit 1; }
+            echo "targets=[\"$ONLY_TARGET\"]" >> "$GITHUB_OUTPUT"
+          else
+            TARGETS=$( make list-targets | tr "\n" " " | sed 's/ /\", \"/g' )
+            echo "targets=[\"${TARGETS%???}]" >> "$GITHUB_OUTPUT"
+          fi
 
   build:
     needs: define_matrix

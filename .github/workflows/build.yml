@@ -48,6 +48,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ffhi/ffhi-site
+          # Ohne ref würde immer der Standard-Branch (main) gebaut, auch bei einem Lauf auf einem anderen Branch
+          ref: ${{ github.sha }}
           path: './site'
       - name: Make Update
         run: make update
@@ -67,5 +69,7 @@ jobs:
           
   push_artifacts_to_server:
     needs: build
+    # Nur Läufe auf main veröffentlichen. Manuelle Test-Läufe auf anderen Branches liefern nur Artefakte.
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/push_artifacts.yml
     secrets: inherit

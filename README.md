@@ -29,6 +29,7 @@ Der Key steht am Ende der Einrichtung auf der Seite des Routers.
 - **Veröffentlichen:** Nur ein vollständiger Lauf auf `main` (ohne `target`) lädt die Images hoch. Der Job `push_artifacts` erzeugt das Manifest für den Zweig
   `experimental`, signiert es mit dem CI-Schlüssel und kopiert alles per `rsync` auf den Update-Mirror (`firmware.freifunk-hildesheim.de`, Ordner `experimental`).
   Läufe auf anderen Branches und Läufe mit einzelnem Target liefern nur Artefakte.
+- **Targets:** Ein Push auf `main` baut nur die Targets aus `DEFAULT_TARGETS` in `build.yml` (`ath79-generic`, `ramips-mt7621`). GitHub lässt höchstens 20 Jobs gleichzeitig laufen, alle 26 Targets dauern deshalb über zwei Stunden. Ein manueller Lauf (Actions, "Run workflow") ohne Eingabe baut alle Targets. **Achtung:** Der Upload ersetzt den Zweig `experimental` vollständig, nach einem Push enthält er also nur die Images dieser Targets. Wer ein weiteres Gerät einsetzt, trägt dessen Target in `DEFAULT_TARGETS` ein.
 - **Zweige:** `experimental` füllt die CI. `testing` und `stable` bekommen nie automatisch etwas. Die Übernahme dorthin ist ein eigener, von Hand signierter
   Schritt (noch nicht automatisiert, Aufgabe 8.4 im OpenSpec-Change `migrate-to-wireguard`). Die Knoten akzeptieren pro Zweig nur Manifeste mit einer
   Signatur der in `site.conf` eingetragenen Schlüssel (`good_signatures = 1`).

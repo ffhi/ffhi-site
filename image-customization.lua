@@ -8,7 +8,7 @@ features {
 	'ebtables-filter-ra-dhcp',
 	'ebtables-limit-arp',
 	'mesh-batman-adv-15',
-	'mesh-vpn-fastd',
+	'mesh-vpn-wireguard',
 	'respondd',
 	'status-page',
 	'web-advanced',

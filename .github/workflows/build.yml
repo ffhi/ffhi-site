@@ -2,6 +2,11 @@ name: FFHI Gluon Build
 
 on:
   workflow_dispatch:
+    inputs:
+      target:
+        description: 'Nur dieses Gluon-Target bauen (z.B. ramips-mt7621); leer = alle'
+        required: false
+        default: ''
   push:
     branches:
       - 'main'
@@ -11,7 +16,8 @@ env:
   GLUON_REF: 031a835e4f6658dc6f720ef55635baf4841a7cb6
 jobs:
   define_matrix:
-    runs-on: ubuntu-latest
+    # Fest auf 24.04: neuere Images liefern uutils-coreutils statt GNU 'install', das OpenWrt-Prereq-Check scheitert
+    runs-on: ubuntu-24.04
     outputs:
       versions: ${{ steps.versions.outputs.targets }}
     steps:
@@ -23,18 +29,27 @@ jobs:
           path: './'
       - name: Fill Target Matrix
         id: versions
+        env:
+          ONLY_TARGET: ${{ github.event.inputs.target }}
         run: |
           mkdir site
           touch site/site.mk
-          TARGETS=$( make list-targets | tr "\n" " " | sed 's/ /\", \"/g' )
-          echo "targets=[\"${TARGETS%???}]" >> "$GITHUB_OUTPUT"
+          if [ -n "$ONLY_TARGET" ]; then
+            # Eingabe gegen die echte Target-Liste prüfen, nie ungeprüft in die Matrix übernehmen
+            make list-targets | grep -qxF -- "$ONLY_TARGET" || { echo "Unbekanntes Target: $ONLY_TARGET" >&2; exit 1; }
+            echo "targets=[\"$ONLY_TARGET\"]" >> "$GITHUB_OUTPUT"
+          else
+            TARGETS=$( make list-targets | tr "\n" " " | sed 's/ /\", \"/g' )
+            echo "targets=[\"${TARGETS%???}]" >> "$GITHUB_OUTPUT"
+          fi
 
   build:
     needs: define_matrix
     strategy:
       matrix:
         version: ${{ fromJSON(needs.define_matrix.outputs.versions) }}
-    runs-on: ubuntu-latest
+    # Fest auf 24.04: neuere Images liefern uutils-coreutils statt GNU 'install', das OpenWrt-Prereq-Check scheitert
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Gluon Release
         uses: actions/checkout@v4
@@ -46,6 +61,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ffhi/ffhi-site
+          # Ohne ref würde immer der Standard-Branch (main) gebaut, auch bei einem Lauf auf einem anderen Branch
+          ref: ${{ github.sha }}
           path: './site'
       - name: Make Update
         run: make update
@@ -65,5 +82,7 @@ jobs:
           
   push_artifacts_to_server:
     needs: build
+    # Nur Läufe auf main veröffentlichen. Manuelle Test-Läufe auf anderen Branches liefern nur Artefakte.
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/push_artifacts.yml
     secrets: inherit

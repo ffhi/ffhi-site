@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       versions: ${{ steps.versions.outputs.targets }}
+      build_date: ${{ steps.meta.outputs.build_date }}
+      gluon_ref: ${{ steps.meta.outputs.gluon_ref }}
     steps:
       - name: Checkout Gluon Release
         uses: actions/checkout@v4
@@ -27,6 +29,13 @@ jobs:
           repository: freifunk-gluon/gluon
           ref: ${{ env.GLUON_REF }}
           path: './'
+      - name: Build metadata
+        id: meta
+        run: |
+          # Das Datum wird einmal festgelegt: Es steckt im Release (site.mk) und alle Jobs müssen dasselbe tragen,
+          # sonst passen Images und Manifest nicht zusammen (Jobs laufen über eine Stunde, auch über Mitternacht)
+          echo "build_date=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+          echo "gluon_ref=$GLUON_REF" >> "$GITHUB_OUTPUT"
       - name: Fill Target Matrix
         id: versions
         env:
@@ -71,6 +80,8 @@ jobs:
           sudo apt update
           sudo apt install qemu-utils
       - name: Make Firmware
+        env:
+          BUILD_DATE: ${{ needs.define_matrix.outputs.build_date }}
         run: |
           BUILD_THREADS="$(($(nproc) + 1))"
           make -j$BUILD_THREADS V=s GLUON_TARGET=${{ matrix.version }}
@@ -81,8 +92,12 @@ jobs:
           name: ${{ matrix.version }}_output
           
   push_artifacts_to_server:
-    needs: build
-    # Nur Läufe auf main veröffentlichen. Manuelle Test-Läufe auf anderen Branches liefern nur Artefakte.
-    if: github.ref == 'refs/heads/main'
+    needs: [define_matrix, build]
+    # Nur vollständige Läufe auf main veröffentlichen. Test-Läufe auf anderen Branches und Läufe mit einzelnem Target
+    # liefern nur Artefakte: ein unvollständiger Satz würde beim Upload den Zweig auf dem Mirror leeren.
+    if: github.ref == 'refs/heads/main' && github.event.inputs.target == ''
     uses: ./.github/workflows/push_artifacts.yml
+    with:
+      gluon_ref: ${{ needs.define_matrix.outputs.gluon_ref }}
+      build_date: ${{ needs.define_matrix.outputs.build_date }}
     secrets: inherit

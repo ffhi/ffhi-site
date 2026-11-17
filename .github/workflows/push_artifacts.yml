@@ -1,14 +1,23 @@
 name: Push artifacts to autoupdate server
 
-# Lädt die Artefakte des laufenden Builds in den Ordner `experimental` des Update-Mirrors.
-# Nur als Aufruf aus build.yml: ein eigenständiger Lauf hätte keine Artefakte, die zu einem Build gehören.
+# Erzeugt aus den Artefakten des laufenden Builds das Manifest, signiert es mit dem CI-Schlüssel und lädt alles in den
+# Ordner `experimental` des Update-Mirrors. Nur als Aufruf aus build.yml: ein eigenständiger Lauf hätte keine
+# Artefakte, die zu einem Build gehören. `testing` und `stable` werden nicht von einem Push beschrieben.
 on:
   workflow_call:
+    inputs:
+      gluon_ref:
+        description: 'Gluon-Commit des Builds'
+        required: true
+        type: string
+      build_date:
+        description: 'Datum im Release (JJJJMMTT), identisch zum Build'
+        required: true
+        type: string
 
 env:
   URL_FIRMWARE: firmware.freifunk-hildesheim.de
   FIRMWARE_USER: ffhi-firmware
-  # Zweig auf dem Mirror. `testing` und `stable` werden nicht von einem Push beschrieben (Spec firmware-delivery).
   TARGET_BRANCH: experimental
   # Öffentlicher Host-Schlüssel des Mirrors (net). Prüfung statt ssh-keyscan: ein anderer Server wird abgelehnt.
   FIRMWARE_HOST_KEY: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGmnm49B2wVXzyOiciJfWzLMzPlUVAxuhe/nj86oCJbO
@@ -17,17 +26,49 @@ jobs:
   push-artifacts:
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout Gluon Release
+        uses: actions/checkout@v4
+        with:
+          repository: freifunk-gluon/gluon
+          ref: ${{ inputs.gluon_ref }}
+          path: './'
+      - name: Checkout FFHI site config
+        uses: actions/checkout@v4
+        with:
+          repository: ffhi/ffhi-site
+          ref: ${{ github.sha }}
+          path: './site'
+      - name: Make Update
+        run: make update
       - name: Download artifacts of this run
         uses: actions/download-artifact@v4
         with:
-          path: out
+          path: output/images
           pattern: '*_output'
           merge-multiple: true
       - name: Check that images are present
         run: |
           # Ohne Images abbrechen: rsync --delete würde sonst den Zweig auf dem Mirror leeren
-          test -n "$(find out -type f -path '*/sysupgrade/*' | head -n 1)" || { echo "Keine Sysupgrade-Images gefunden" >&2; exit 1; }
-          find out -type f | wc -l
+          test -n "$(find output/images -type f -path '*/sysupgrade/*' | head -n 1)" || { echo "Keine Sysupgrade-Images gefunden" >&2; exit 1; }
+          find output/images -type f | wc -l
+      - name: Install ecdsautils
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ecdsautils
+      - name: Create manifest
+        env:
+          BUILD_DATE: ${{ inputs.build_date }}
+        run: make manifest GLUON_AUTOUPDATER_BRANCH=${{ env.TARGET_BRANCH }}
+      - name: Sign manifest
+        run: |
+          umask 077
+          printf '%s\n' "$SIGN_KEY" > "$RUNNER_TEMP/sign.key"
+          sh contrib/sign.sh "$RUNNER_TEMP/sign.key" "output/images/sysupgrade/${{ env.TARGET_BRANCH }}.manifest"
+          rm -f "$RUNNER_TEMP/sign.key"
+          # Die Signatur steht nach der Zeile `---`
+          sed -n '/^---$/,$p' "output/images/sysupgrade/${{ env.TARGET_BRANCH }}.manifest" | grep -cE '^[0-9a-f]{128}$' | grep -qx 1
+        env:
+          SIGN_KEY: ${{ secrets.FIRMWARE_SIGN_KEY }}
       - name: Prepare SSH connection
         run: |
           install -d -m 700 ~/.ssh
@@ -40,4 +81,4 @@ jobs:
         run: |
           rsync -a --delete-after \
             -e "ssh -i $HOME/.ssh/firmware_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" \
-            out/ "${{ env.FIRMWARE_USER }}@${{ env.URL_FIRMWARE }}:${{ env.TARGET_BRANCH }}/"
+            output/images/ "${{ env.FIRMWARE_USER }}@${{ env.URL_FIRMWARE }}:${{ env.TARGET_BRANCH }}/"

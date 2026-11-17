@@ -1,44 +1,43 @@
 name: Push artifacts to autoupdate server
 
+# Lädt die Artefakte des laufenden Builds in den Ordner `experimental` des Update-Mirrors.
+# Nur als Aufruf aus build.yml: ein eigenständiger Lauf hätte keine Artefakte, die zu einem Build gehören.
 on:
-  workflow_dispatch:
   workflow_call:
 
 env:
   URL_FIRMWARE: firmware.freifunk-hildesheim.de
-  CADDY_FOLDER: /opt/docker/caddy/data/www-data/firmware/testing
+  FIRMWARE_USER: ffhi-firmware
+  # Zweig auf dem Mirror. `testing` und `stable` werden nicht von einem Push beschrieben (Spec firmware-delivery).
+  TARGET_BRANCH: experimental
+  # Öffentlicher Host-Schlüssel des Mirrors (net). Prüfung statt ssh-keyscan: ein anderer Server wird abgelehnt.
+  FIRMWARE_HOST_KEY: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGmnm49B2wVXzyOiciJfWzLMzPlUVAxuhe/nj86oCJbO
 
 jobs:
   push-artifacts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout ffhi-site
-        uses: actions/checkout@v4
+      - name: Download artifacts of this run
+        uses: actions/download-artifact@v4
         with:
-          repository: ffhi/ffhi-site
-          path: './'
-      - name: Query list of artifacts
+          path: out
+          pattern: '*_output'
+          merge-multiple: true
+      - name: Check that images are present
         run: |
-          curl -s -L \
-          -H "Accept: application/vnd.github+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          https://api.github.com/repos/ffhi/ffhi-site/actions/artifacts > artifacts.json
-      - name: Download artifacts
-        run: |
-          mv .github/scripts/download_artifacts.py ./
-          python3 download_artifacts.py artifacts.json ${{secrets.GITHUB_TOKEN}}
-      - name: Save SSH key to file 
-        run: 'echo "$SSH_KEY" > keyfile'
-        env:
-          SSH_KEY: ${{secrets.NETCUP_SSH_PRIVATE_KEY}}
+          # Ohne Images abbrechen: rsync --delete würde sonst den Zweig auf dem Mirror leeren
+          test -n "$(find out -type f -path '*/sysupgrade/*' | head -n 1)" || { echo "Keine Sysupgrade-Images gefunden" >&2; exit 1; }
+          find out -type f | wc -l
       - name: Prepare SSH connection
         run: |
-          chmod 400 keyfile
-          mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
-          ssh-keyscan ${{env.URL_FIRMWARE}} >> ~/.ssh/known_hosts
+          install -d -m 700 ~/.ssh
+          echo "${{ env.URL_FIRMWARE }} ${{ env.FIRMWARE_HOST_KEY }}" > ~/.ssh/known_hosts
+          umask 077
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/firmware_key
+        env:
+          SSH_KEY: ${{ secrets.FIRMWARE_SSH_KEY }}
       - name: Push files to firmware server
         run: |
-          ssh -i keyfile root@${{env.URL_FIRMWARE}} 'rm -rf ${{env.CADDY_FOLDER}} && mkdir ${{env.CADDY_FOLDER}}'
-          scp -i keyfile *.zip root@${{env.URL_FIRMWARE}}:${{env.CADDY_FOLDER}}
-          ssh -i keyfile root@${{env.URL_FIRMWARE}} 'cd ${{env.CADDY_FOLDER}} && unzip "*.zip"'
-          ssh -i keyfile root@${{env.URL_FIRMWARE}} 'rm ${{env.CADDY_FOLDER}}/*.zip'
+          rsync -a --delete-after \
+            -e "ssh -i $HOME/.ssh/firmware_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" \
+            out/ "${{ env.FIRMWARE_USER }}@${{ env.URL_FIRMWARE }}:${{ env.TARGET_BRANCH }}/"

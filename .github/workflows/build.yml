@@ -4,7 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: 'Nur dieses Gluon-Target bauen (z.B. ramips-mt7621); leer = alle'
+        description: 'Nur dieses Gluon-Target bauen (z.B. ramips-mt7621); leer = alle Targets'
+        required: false
+        default: ''
+      devices:
+        description: 'Nur diese Geräte bauen (Gluon-Namen, durch Leerzeichen getrennt, z.B. "d-link-dap-x1860-a1 genexis-pulse-ex400"); leer = alle Geräte des Targets. Spart Zeit beim Testen.'
         required: false
         default: ''
   push:
@@ -14,6 +18,10 @@ on:
 env:
   #GLUON_REF: d2a9cc369a32dd1c1b5ffb9ac7a452d78457043d
   GLUON_REF: 031a835e4f6658dc6f720ef55635baf4841a7cb6
+  # Ein Push auf main baut nur diese Targets (Geräte im Einsatz: D-Link DAP-X1860, Genexis EX400, TP-Link WDR3600/4300,
+  # Ubiquiti UniFi AC und EdgeRouter X). Mehr als 20 Jobs laufen bei GitHub nicht gleichzeitig, alle 26 Targets dauern
+  # deshalb über zwei Stunden. Ein manueller Lauf ohne Eingabe baut alle Targets und stellt auf dem Mirror den vollen Satz her.
+  DEFAULT_TARGETS: 'ath79-generic ramips-mt7621'
 jobs:
   define_matrix:
     # Fest auf 24.04: neuere Images liefern uutils-coreutils statt GNU 'install', das OpenWrt-Prereq-Check scheitert
@@ -40,10 +48,19 @@ jobs:
         id: versions
         env:
           ONLY_TARGET: ${{ github.event.inputs.target }}
+          EVENT: ${{ github.event_name }}
         run: |
           mkdir site
           touch site/site.mk
-          if [ -n "$ONLY_TARGET" ]; then
+          if [ "$EVENT" = push ]; then
+            # Standardliste, jedes Target gegen die echte Liste prüfen
+            TARGETS=""
+            for t in $DEFAULT_TARGETS; do
+              make list-targets | grep -qxF -- "$t" || { echo "Unbekanntes Target in DEFAULT_TARGETS: $t" >&2; exit 1; }
+              TARGETS="$TARGETS\"$t\", "
+            done
+            echo "targets=[${TARGETS%, }]" >> "$GITHUB_OUTPUT"
+          elif [ -n "$ONLY_TARGET" ]; then
             # Eingabe gegen die echte Target-Liste prüfen, nie ungeprüft in die Matrix übernehmen
             make list-targets | grep -qxF -- "$ONLY_TARGET" || { echo "Unbekanntes Target: $ONLY_TARGET" >&2; exit 1; }
             echo "targets=[\"$ONLY_TARGET\"]" >> "$GITHUB_OUTPUT"
@@ -82,9 +99,14 @@ jobs:
       - name: Make Firmware
         env:
           BUILD_DATE: ${{ needs.define_matrix.outputs.build_date }}
+          ONLY_DEVICES: ${{ github.event.inputs.devices }}
         run: |
           BUILD_THREADS="$(($(nproc) + 1))"
-          make -j$BUILD_THREADS V=s GLUON_TARGET=${{ matrix.version }}
+          # Geräteliste nur aus Kleinbuchstaben, Ziffern, Bindestrichen und Leerzeichen, nie ungeprüft an make geben
+          [[ "$ONLY_DEVICES" =~ ^[a-z0-9\ -]*$ ]] || { echo "Ungültige Geräteliste" >&2; exit 1; }
+          ARGS=(-j"$BUILD_THREADS" V=s GLUON_TARGET=${{ matrix.version }})
+          [ -n "$ONLY_DEVICES" ] && ARGS+=("GLUON_DEVICES=$ONLY_DEVICES")
+          make "${ARGS[@]}"
       - name: Publish Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -95,7 +117,7 @@ jobs:
     needs: [define_matrix, build]
     # Nur vollständige Läufe auf main veröffentlichen. Test-Läufe auf anderen Branches und Läufe mit einzelnem Target
     # liefern nur Artefakte: ein unvollständiger Satz würde beim Upload den Zweig auf dem Mirror leeren.
-    if: github.ref == 'refs/heads/main' && github.event.inputs.target == ''
+    if: github.ref == 'refs/heads/main' && github.event.inputs.target == '' && github.event.inputs.devices == ''
     uses: ./.github/workflows/push_artifacts.yml
     with:
       gluon_ref: ${{ needs.define_matrix.outputs.gluon_ref }}

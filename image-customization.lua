@@ -1,6 +1,7 @@
 packages {'iwinfo'}
 
 features {
+	'authorized-keys', -- schreibt authorized_keys aus site.conf nach /etc/dropbear (Root-Login per Schlüssel)
 	'autoupdater',
 	'ebtables-filter-multicast',
 	'config-mode-domain-select',

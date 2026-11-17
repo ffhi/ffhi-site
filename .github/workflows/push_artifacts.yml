@@ -51,14 +51,19 @@ jobs:
           # Ohne Images abbrechen: rsync --delete würde sonst den Zweig auf dem Mirror leeren
           test -n "$(find output/images -type f -path '*/sysupgrade/*' | head -n 1)" || { echo "Keine Sysupgrade-Images gefunden" >&2; exit 1; }
           find output/images -type f | wc -l
-      - name: Install ecdsautils
+      - name: Install ecdsautils and Lua
         run: |
           sudo apt-get update
-          sudo apt-get install -y ecdsautils
+          # lua5.1 ersetzt das Lua des OpenWrt-Hosts: Dessen Bau (make tools/install) dauert über 25 Minuten, das Manifest
+          # braucht nur ein normales Lua 5.1
+          sudo apt-get install -y ecdsautils lua5.1
+          test -x /usr/bin/lua5.1
       - name: Create manifest
         env:
           BUILD_DATE: ${{ inputs.build_date }}
-        run: make manifest GLUON_AUTOUPDATER_BRANCH=${{ env.TARGET_BRANCH }}
+        run: |
+          # LUA mit absolutem Pfad zu einer vorhandenen Datei: make baut dann das OpenWrt-Lua nicht
+          make manifest GLUON_AUTOUPDATER_BRANCH=${{ env.TARGET_BRANCH }} LUA=/usr/bin/lua5.1
       - name: Sign manifest
         run: |
           umask 077

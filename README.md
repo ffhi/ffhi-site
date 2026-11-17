@@ -30,7 +30,9 @@ Der Key steht am Ende der Einrichtung auf der Seite des Routers.
   `experimental`, signiert es mit dem CI-Schlüssel und kopiert alles per `rsync` auf den Update-Mirror (`firmware.freifunk-hildesheim.de`, Ordner `experimental`).
   Läufe auf anderen Branches und Läufe mit einzelnem Target liefern nur Artefakte.
 - **Zweige:** `experimental` füllt die CI. `testing` und `stable` bekommen nie automatisch etwas. Die Übernahme dorthin ist ein eigener, von Hand signierter
-  Schritt (noch nicht automatisiert, Aufgabe 8.4 im OpenSpec-Change `migrate-to-wireguard`). Die Knoten akzeptieren pro Zweig nur Manifeste mit einer
+  Schritt: `scripts/promote.sh [-n] <testing|stable> <schlüsseldatei>` (Trockenlauf mit `-n`). Er holt das Manifest von `experimental`, setzt den
+  Zweig, signiert mit dem Schlüssel `ffhi1` oder `Basti` (`ecdsasign`, Paket `ecdsautils`), kopiert die Images auf `net` (SSH-Zugang als Admin, Alias `net`)
+  und legt das Manifest zuletzt ab. Der CI-Schlüssel kann das nicht, ein Push startet es nie. Die Knoten akzeptieren pro Zweig nur Manifeste mit einer
   Signatur der in `site.conf` eingetragenen Schlüssel (`good_signatures = 1`).
 
 ### Secrets in GitHub (Settings, Secrets and variables, Actions)

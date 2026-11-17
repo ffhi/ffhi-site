@@ -8,6 +8,10 @@
 
 GLUON_MULTIDOMAIN=1
 
+# Autoupdater im Image standardmäßig an (Gluon: ohne diese Variable ist er aus). Ein Knoten holt nur Updates, die mit den
+# Schlüsseln seines Zweigs signiert sind (site.conf, good_signatures). Der Besitzer kann ihn im Konfigurationsmodus abschalten.
+GLUON_AUTOUPDATER_ENABLED ?= 1
+
 #DEFAULT_GLUON_RELEASE := 0.6+exp$(shell date '+%Y%m%d')
 # BUILD_DATE setzt die CI einmal fuer alle Jobs, damit Images und Manifest dasselbe Release tragen
 DEFAULT_GLUON_RELEASE := WG-0.8Alpha+stable$(if $(BUILD_DATE),$(BUILD_DATE),$(shell date '+%Y%m%d'))

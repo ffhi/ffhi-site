@@ -19,8 +19,8 @@ env:
   URL_FIRMWARE: firmware.freifunk-hildesheim.de
   FIRMWARE_USER: ffhi-firmware
   TARGET_BRANCH: experimental
-  # Öffentlicher Host-Schlüssel des Mirrors (net). Prüfung statt ssh-keyscan: ein anderer Server wird abgelehnt.
-  FIRMWARE_HOST_KEY: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGmnm49B2wVXzyOiciJfWzLMzPlUVAxuhe/nj86oCJbO
+  # Öffentlicher Host-Schlüssel des Mirrors (ffhi). Prüfung statt ssh-keyscan: ein anderer Server wird abgelehnt.
+  FIRMWARE_HOST_KEY: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFUh0OeQNPNgcOjeDnHog7CjzMmxvsL2jHDq1nhhPJVh
 
 jobs:
   push-artifacts:

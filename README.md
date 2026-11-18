@@ -32,7 +32,7 @@ Der Key steht am Ende der Einrichtung auf der Seite des Routers.
 - **Targets:** Ein Push auf `main` baut nur die Targets aus `DEFAULT_TARGETS` in `build.yml` (`ath79-generic`, `ramips-mt7621`). GitHub lässt höchstens 20 Jobs gleichzeitig laufen, alle 26 Targets dauern deshalb über zwei Stunden. Ein manueller Lauf (Actions, "Run workflow") ohne Eingabe baut alle Targets. **Achtung:** Der Upload ersetzt den Zweig `experimental` vollständig, nach einem Push enthält er also nur die Images dieser Targets. Wer ein weiteres Gerät einsetzt, trägt dessen Target in `DEFAULT_TARGETS` ein. Beim manuellen Lauf begrenzt die Eingabe `devices` die Geräte (z. B. `d-link-dap-x1860-a1 genexis-pulse-ex400` mit Target `ramips-mt7621`). Solche Läufe veröffentlichen nichts auf dem Mirror.
 - **Zweige:** `experimental` füllt die CI. `testing` und `stable` bekommen nie automatisch etwas. Die Übernahme dorthin ist ein eigener, von Hand signierter
   Schritt: `scripts/promote.sh [-n] <testing|stable> <schlüsseldatei>` (Trockenlauf mit `-n`). Er holt das Manifest von `experimental`, setzt den
-  Zweig, signiert mit dem Schlüssel `ffhi1` oder `Basti` (`ecdsasign`, Paket `ecdsautils`), kopiert die Images auf `net` (SSH-Zugang als Admin, Alias `net`)
+  Zweig, signiert mit dem Schlüssel `ffhi1` oder `Basti` (`ecdsasign`, Paket `ecdsautils`), kopiert die Images auf `ffhi` (SSH-Zugang als Admin, Alias `ffhi`)
   und legt das Manifest zuletzt ab. Der CI-Schlüssel kann das nicht, ein Push startet es nie. Die Knoten akzeptieren pro Zweig nur Manifeste mit einer
   Signatur der in `site.conf` eingetragenen Schlüssel (`good_signatures = 1`).
 

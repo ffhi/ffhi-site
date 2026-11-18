@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Übernimmt den Stand von `experimental` nach `testing` oder `stable` auf dem Update-Mirror.
 #
-# Läuft von Hand auf dem Rechner einer Person mit Signaturschlüssel (ffhi1 oder Basti) und Admin-Zugang zu `net`.
+# Läuft von Hand auf dem Rechner einer Person mit Signaturschlüssel (ffhi1 oder Basti) und Admin-Zugang zu `ffhi`.
 # Der CI-Schlüssel darf das nicht: er ist nur in `site.conf` für `experimental` eingetragen, und ein Push startet diesen
 # Schritt nie.
 #
@@ -11,7 +11,7 @@
 # Auf dem Mirror die Images per rsync von experimental/ in den Zielzweig kopieren, das Manifest zuletzt (atomar) ablegen,
 # damit kein Knoten ein Manifest ohne die zugehörigen Images sieht.
 #
-# Umgebung: MIRROR_SSH (Standard: net), MIRROR_DIR (Standard: /opt/docker/caddy/site/firmware),
+# Umgebung: MIRROR_SSH (Standard: ffhi), MIRROR_DIR (Standard: /opt/ffhi-services/caddy/site/firmware),
 #           MIRROR_URL (Standard: https://firmware.freifunk-hildesheim.de)
 set -euo pipefail
 
@@ -20,8 +20,8 @@ while getopts "ny" o; do case $o in n) DRY=1 ;; y) YES=1 ;; *) exit 2 ;; esac; d
 shift $((OPTIND - 1))
 TARGET="${1:-}"; KEY="${2:-}"
 SRC=experimental
-MIRROR_SSH="${MIRROR_SSH:-net}"
-MIRROR_DIR="${MIRROR_DIR:-/opt/docker/caddy/site/firmware}"
+MIRROR_SSH="${MIRROR_SSH:-ffhi}"
+MIRROR_DIR="${MIRROR_DIR:-/opt/ffhi-services/caddy/site/firmware}"
 MIRROR_URL="${MIRROR_URL:-https://firmware.freifunk-hildesheim.de}"
 
 case "$TARGET" in testing|stable) ;; *) echo "Aufruf: $0 [-n] [-y] <testing|stable> <schlüsseldatei>" >&2; exit 2 ;; esac

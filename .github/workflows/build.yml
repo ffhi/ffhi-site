@@ -95,6 +95,24 @@ jobs:
           path: './site'
       - name: Make Update
         run: make update
+      # Cache für Downloads, Host-Werkzeuge und Toolchain: ändern sich nur mit dem Gluon-Pin und dem Target, nicht mit der
+      # Site-Konfiguration. Spart je Lauf die ersten Minuten (Python, Lua, Compiler). Wird nur nach einem erfolgreichen Lauf
+      # gespeichert. Bei Problemen: Schlüssel (Suffix -v1) hochzählen, dann wird neu gebaut.
+      - name: Cache OpenWrt (Downloads, Host-Werkzeuge, Toolchain)
+        id: openwrt-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            openwrt/dl
+            openwrt/staging_dir/host
+            openwrt/staging_dir/hostpkg
+            openwrt/staging_dir/toolchain-*
+            openwrt/build_dir/host
+            openwrt/build_dir/hostpkg
+            openwrt/build_dir/toolchain-*
+          key: openwrt-${{ matrix.version }}-${{ env.GLUON_REF }}-v1
+      - name: Cache-Treffer
+        run: echo "cache-hit=${{ steps.openwrt-cache.outputs.cache-hit }}"
       - name: Install qemu-img und BPF-Toolchain
         run: |
           sudo apt update

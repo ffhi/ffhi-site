@@ -95,10 +95,11 @@ jobs:
           path: './site'
       - name: Make Update
         run: make update
-      - name: Install qemu-img
+      - name: Install qemu-img und BPF-Toolchain
         run: |
           sudo apt update
-          sudo apt install qemu-utils
+          # clang/llvm: OpenWrt 24.10 (Gluon 2025.1) baut xdp-tools und braucht dafür llc/clang mit BPF-Ziel
+          sudo apt install qemu-utils clang llvm
       - name: Make Firmware
         env:
           BUILD_DATE: ${{ needs.define_matrix.outputs.build_date }}
